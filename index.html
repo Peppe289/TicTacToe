@@ -95,6 +95,30 @@
             background-color: #20278a;
         }
 
+        #dev {
+            margin-top: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            /*animation: hue-animation 4s alternate infinite;*/
+        }
+
+        #dev>a {
+            color: rgb(255, 255, 255);
+            text-decoration: none;
+        }
+
+        /*
+        @keyframes hue-animation {
+            100% {
+                filter: hue-rotate(360deg);
+            }
+        }*/
+
+        .text-with-border {
+            text-shadow: 2px 2px #000000;
+        }
     </style>
 </head>
 
@@ -115,6 +139,11 @@
     </div>
 
     <button id="resetButton" onclick="resetGame()">Resetta Gioco</button>
+
+    <div id="dev">
+        <p class="text-with-border" style="padding-right: 4px;">Developed by</p><a class="text-with-border"
+            href="https://peppe289.github.io/">Peppe289</a>
+    </div>
 
     <script>
         const cells = document.querySelectorAll('.cell');
