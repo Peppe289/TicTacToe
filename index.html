@@ -2,7 +2,10 @@
 <html>
 
 <head>
-    <title>Gioco del Tris</title>
+    <!-- Adapt size for mobile devices -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Peppe's TicTacToe</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -45,6 +48,7 @@
 
         h1 {
             margin: 20px 0;
+            color: white;
         }
 
         .board {
@@ -95,7 +99,7 @@
 </head>
 
 <body>
-    <h1>Tris</h1>
+    <h1>TicTacToe</h1>
     <div id="game-box" class="game-box">
         <div class="board" id="board">
             <div class="cell" onclick="playMove(0)"></div>
