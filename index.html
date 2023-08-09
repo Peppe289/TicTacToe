@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Gioco del Tris</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            justify-content: center;
+            align-items: center;
+            /* calc this for h1 margin */
+            height: calc(100vh - 20px);
+            user-select: none;
+            background: linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet, red);
+            background-size: 200% 200%;
+            animation: gradientAnimation 20s linear infinite;
+        }
+
+        @keyframes gradientAnimation {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .game-box {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        h1 {
+            margin: 20px 0;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-row-gap: 2px;
+            grid-column-gap: 6px;
+            text-align: center;
+        }
+
+        .cell {
+            width: 100px;
+            height: 100px;
+            font-size: 36px;
+            border: 2px solid #333;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(255, 255, 255, 0.479);
+            color: #333;
+            border-radius: 10px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .cell:hover {
+            background-color: #333;
+            color: #fff;
+        }
+
+        #resetButton {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: rgba(56, 100, 219, 0.877);
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        #resetButton:hover {
+            background-color: #20278a;
+        }
+
+    </style>
+</head>
+
+<body>
+    <h1>Tris</h1>
+    <div id="game-box" class="game-box">
+        <div class="board" id="board">
+            <div class="cell" onclick="playMove(0)"></div>
+            <div class="cell" onclick="playMove(1)"></div>
+            <div class="cell" onclick="playMove(2)"></div>
+            <div class="cell" onclick="playMove(3)"></div>
+            <div class="cell" onclick="playMove(4)"></div>
+            <div class="cell" onclick="playMove(5)"></div>
+            <div class="cell" onclick="playMove(6)"></div>
+            <div class="cell" onclick="playMove(7)"></div>
+            <div class="cell" onclick="playMove(8)"></div>
+        </div>
+    </div>
+
+    <button id="resetButton" onclick="resetGame()">Resetta Gioco</button>
+
+    <script>
+        const cells = document.querySelectorAll('.cell');
+        const player = 'X';
+        const computer = 'O';
+        let board = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '];
+
+        let block_board = 0;
+
+        function checkWinner(player) {
+            const winPatterns = [
+                [0, 1, 2], [3, 4, 5], [6, 7, 8],
+                [0, 3, 6], [1, 4, 7], [2, 5, 8],
+                [0, 4, 8], [2, 4, 6]
+            ];
+
+            return winPatterns.some(pattern =>
+                pattern.every(cell => board[cell] === player)
+            );
+        }
+
+        /**
+         * Recursively check the best way to score more points
+         */
+        function minimax(position, depth, isMaximizingPlayer) {
+            if (checkWinner(player)) {
+                return -1;
+            }
+            if (checkWinner(computer)) {
+                return 1;
+            }
+            if (checkTie()) {
+                return 0;
+            }
+
+            if (isMaximizingPlayer) {
+                let bestScore = -Infinity;
+                for (let i = 0; i < 9; i++) {
+                    if (board[i] === ' ') {
+                        board[i] = computer;
+                        let score = minimax(board, depth + 1, false);
+                        board[i] = ' ';
+                        bestScore = Math.max(score, bestScore);
+                    }
+                }
+                return bestScore;
+            } else {
+                let bestScore = Infinity;
+                for (let i = 0; i < 9; i++) {
+                    if (board[i] === ' ') {
+                        board[i] = player;
+                        let score = minimax(board, depth + 1, true);
+                        board[i] = ' ';
+                        bestScore = Math.min(score, bestScore);
+                    }
+                }
+                return bestScore;
+            }
+        }
+
+        /**
+         * Nice good job
+         */
+        function checkTie() {
+            return board.every(cell => cell !== ' ');
+        }
+
+        /**
+         * Check for best movie
+         */
+        function bestMove() {
+            let bestScore = -Infinity;
+            let move = -1;
+            for (let i = 0; i < 9; i++) {
+                if (board[i] === ' ') {
+                    board[i] = computer;
+                    let score = minimax(board, 0, false);
+                    board[i] = ' ';
+                    if (score > bestScore) {
+                        bestScore = score;
+                        move = i;
+                    }
+                }
+            }
+            return move;
+        }
+
+        /**
+         * Check if is valid move
+         */
+        function isMoveValid(move) {
+            return move >= 0 && move < 9 && board[move] === ' ';
+        }
+
+        /**
+         * int func:
+         * 1 is for winner or tie
+         * -1 is for invalid move
+         * 0 is for normal
+         */
+        function makeMove(index) {
+            const move = index;
+
+            if (cells[index].textContent !== '')
+                return -1;
+
+            if (isMoveValid(index)) {
+                board[move] = player;
+                cells[move].textContent = 'X';
+
+                if (checkWinner(player)) {
+                    //alert("Winner for player");
+                    return 1;
+                }
+
+                const computerMove = bestMove();
+
+                /**
+                 * Tie
+                 */
+                if (computerMove === -1)
+                    return 1;
+
+                console.log(computerMove);
+                board[computerMove] = computer;
+                cells[computerMove].textContent = 'O';
+
+                if (checkWinner(computer)) {
+                    //alert("Winner for PC");
+                    return 1;
+                }
+            }
+
+            return 0;
+        }
+
+        function clearBoard() {
+            for (let i = 0; i < 9; i++) {
+                board[i] = ' ';
+                cells[i].textContent = '';
+                block_board = 0;
+            }
+        }
+
+        function playMove(index) {
+            if (block_board == 1)
+                return;
+
+            let ret = makeMove(index);
+
+            if (ret === 1)
+                block_board = 1;
+        }
+
+        function resetGame() {
+            clearBoard();
+        }
+    </script>
+</body>
+
+</html>
